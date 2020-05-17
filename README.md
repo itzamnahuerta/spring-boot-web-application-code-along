@@ -417,7 +417,7 @@ One of the important things with Spring MVC is that we have a front controller c
     ```
     </details> 
 
-3. Add a `Password` input with an attribute of `type="password` above the submit button to our form in `login.jsp`
+3. Add a `Password` input tag with an attribute of `type="password"` and as `name="password"` above the submit button to our form in `login.jsp`
     - Go to http://localhost:8080/login and type in a password. Notice that our GET method is not secure because it displays the password input we entered. 
       <details>
       <summary> Why does it do this?</summary>
@@ -436,7 +436,67 @@ One of the important things with Spring MVC is that we have a front controller c
         Looking at our response from  `Chrome DevTools` > `Network` > `Response`. With GET or POST it is given us back the same html page. Until now we have not specified a request method in our `LoginController`. When you don't specify a request method in `@RequestMapping`, this will then be used for all the requests (GET, POST, PUT, etc.) and the same method will be used. So how do we avoid that? 
 
       </details>
-4. In our `LoginController` file, let's update @
+4. In our `LoginController` file, let's update `@RequestMapping` by adding a new paramaeter. We will update `value="/login` and add `method = RequestMethod.GET ` 
+    <details>
+    <summary>Updated LoginController code snippet </summary>
+
+    ```java
+    package com.ps.springboot.web.springbootfirstwebapplication.controller;
+
+    import org.springframework.stereotype.Controller;
+    import org.springframework.ui.ModelMap; 
+    import org.springframework.web.bind.annotation.RequestMapping;
+    import org.springframework.web.bind.annotation.RequestMethod;
+
+    @Controller
+    public class LoginController {
+      @RequestMapping(value="/login", method = RequestMethod.GET) 
+      public String loginMessage(ModelMap model) {
+    //		model.put("name", name);
+        return "login";
+        }
+    }
+  
+    ```
+    
+    </details>
+    <details>
+    <summary> Whitelabel Error Page </summary>
+
+    Notice after refreshing our page and inserting a `Name` and `Password`, we get a <b>Whitelabel Error Page</b> indicating our <b>Request method "POST" not supported. </b>. Inside of our Google DevTools, our Status is a 405 POST method.  
+
+    We don't have a method to support the `POST` and that's the reason why it's causing a problem.
+    </details>
+
+5. We are going to add a method to support our password `POST`.
+    - Update method name `loginMessage` to `showLoginPage`
+    - Create a new method, identical to the method above called `showWelcomePage`. The difference will be`@RequestMapping` parameter will be `method = RequestMethod.POST`. And it will `return "welcome"`
+      <details>
+      <summary> <b>showWelcomePage</b> code snippet </summary>
+
+      ```java
+      @RequestMapping(value="/login", method=RequestMethod.POST) 
+
+      public String showWelcomePage(ModelMap model) {
+        return "welcome"; // we will create a welcome page
+      }
+      ```
+
+      </details>
+
+    - In `../WEB-INF/jsp/`, we will create a `welcome.jsp` file. Add your html template. In the `body`, add `<h1>Welcome!</h1>`
+
+
+6. What we want do now is pick up the value from the request. Let's start with picking up the value of the name. So we can then display it in our `Welcome` page. 
+    - Add and import `@RequestParam` inside the method parameter with a type `String` and name `name`
+    - Add `model.put("name", name)` in the body of our `showWelcomePage` method
+    - In `welcome.jsp`, add `${name}` to the heading tag
+
+
+
+
+
+
 
 
 <!-- 
