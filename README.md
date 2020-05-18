@@ -1116,7 +1116,30 @@ Note: Refresh your page to `/login` and sign back in to see the changes
     - Add `service.deleteTodo(id)` to the body of the method
     - `return "redirect:/list-todos"`
 
+### Step 12: Format Add Todo Page and Adding Basic HTML5 form validation
+1. Copy the bootstrap link tag and script tags from `list-todos.jsp` into `todo.jsp` 
+    - Add a div with a class `container` around the body content of `todo.jsp`
+2. Let's add a `<fieldset>` to each element you can get a `<label>` inside of our form. 
+    - For instance our `Description`. Add a `form-group` class to the `fieldset`. 
+    - Add a class with `form-control` for our input tag
+    - Update our input button with a `button` tag
+    - The button conent will be `Add`
+    - Add `"btn btn-success"` to our button class
+      <details>
+      <summary> Fieldset code snippet</summary>
 
+      ```html
+
+      <fieldset class="form-group"> 
+      <label> Description </label>
+      <input name="desc" type="text" class="form-control"/>
+      </fieldset>
+      <button type="submit" class="btn btn-success"> Add </button>
+
+      ```
+      </details>
+
+    - Notice that if we were to add an empty description to our todos list. It will aggregate! Let's prevent that from happening by adding the following attribute `required="required"` to our input tag. 
 
 
 
