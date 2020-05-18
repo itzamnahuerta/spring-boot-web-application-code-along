@@ -951,6 +951,70 @@ Note: Refresh your page to `/login` and sign back in to see the changes
 
 
 ### Step 9: Display Todos in a table using JSTL Tags
+1. Add the following code snippet to our `pom.xml`, we can past it just below our spring boot starter web dependency
+    <details>
+    <summary> JSTL Dependency  </summary>
+
+    ```java
+    <dependency>
+        <groupId>jstl</groupId>
+        <artifactId>jstl</artifactId>
+        <version>1.2</version>
+    </dependency>
+    ```
+
+    <image src="assets/jstl-dependency-in-pom.png"> 
+    </details>
+    - Terminate and restart your server 
+
+2. Let's tidy up and add onto our `list-todos.jsp` file. 
+      <details>
+      <summary> <b> List Todos </b> code snippet</summary>
+
+      ```html
+      <html>
+        <head>
+        <title>Todo's for ${name}</title>
+        </head>
+        <body>
+          <h1> Your Todos </h1>
+          
+        <a href="/add-todo">Add a Todo </a>
+      </html>
+
+      ```
+      </details> 
+
+    - We will need to create a JSTL for loop in order to map over our to do items for our table. Add `<%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>` jstl library before our `<html>` body. Now add the 
+    <details>
+    <summary> Table body code snippet </summary>
+
+    ```html
+          <table> 
+            <caption>Your todos are </caption>
+            <thead>
+              <tr> 
+                <th> Description </th>
+                <th> Target Date  </th>
+                <th> Is it Done? </th>
+              </tr>
+            </thead>
+            <tbody> 
+              <c:forEach items="${todos}" var="todo">
+                <tr> 
+                  <td>${todo.desc}</td>
+                  <td>${todo.targetDate}</td>
+                  <td>${todo.done}</td>
+                </tr>
+              </c:forEach>
+            </tbody>
+          </table>
+    ```
+    </details>
+    
+
+
+
 
 <!-- 
 <details>
