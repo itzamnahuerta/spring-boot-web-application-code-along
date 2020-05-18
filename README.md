@@ -1,8 +1,4 @@
-# Spring Boot Web Application
-
-## Overview 
-
-- We will generate a complete spring boot web application 
+# Spring Boot To-Do Web Application
 
 
 
@@ -590,7 +586,256 @@ One of the important things with Spring MVC is that we have a front controller c
 <b>You can now try the valid and invalid scenario of logging in!</b>
 
 
+### Step 7: Create To-Do Controller & View
+
+We want to be able to add, delete, modify, to-do's through this application. 
+- Create a `ToDoController` and `list-todos.jsp`
+- Make `ToDoService` a `@Service` and inject it 
+
+1. Create a new java class named `To Do` with package `com.ps.springboot.web.springbootfirstwebapplication.model`. Copy and past the code below onto the file. 
+    <details>
+    <summary> Screenshot of new class</summary>
+    <image src="assets/create-to-do-class.png">
+
+    </details>
+
+    <details>
+    <summary><b>To Do</b> code snippet  </summary>
+
+      ```java
+      package com.ps.springboot.web.springbootfirstwebapplication.model;
+
+      import java.util.Date;
+
+      public class Todo {
+
+          private int id;
+          private String user;
+          private String desc;
+          private Date targetDate;
+          private boolean isDone;
+
+          public Todo(int id, String user, String desc, Date targetDate,
+                  boolean isDone) {
+              super();
+              this.id = id;
+              this.user = user;
+              this.desc = desc;
+              this.targetDate = targetDate;
+              this.isDone = isDone;
+          }
+
+          public int getId() {
+              return id;
+          }
+
+          public void setId(int id) {
+              this.id = id;
+          }
+
+          public String getUser() {
+              return user;
+          }
+
+          public void setUser(String user) {
+              this.user = user;
+          }
+
+          public String getDesc() {
+              return desc;
+          }
+
+          public void setDesc(String desc) {
+              this.desc = desc;
+          }
+
+          public Date getTargetDate() {
+              return targetDate;
+          }
+
+          public void setTargetDate(Date targetDate) {
+              this.targetDate = targetDate;
+          }
+
+          public boolean isDone() {
+              return isDone;
+          }
+
+          public void setDone(boolean isDone) {
+              this.isDone = isDone;
+          }
+
+          @Override
+          public int hashCode() {
+              final int prime = 31;
+              int result = 1;
+              result = prime * result + id;
+              return result;
+          }
+
+          @Override
+          public boolean equals(Object obj) {
+              if (this == obj) {
+                  return true;
+              }
+              if (obj == null) {
+                  return false;
+              }
+              if (getClass() != obj.getClass()) {
+                  return false;
+              }
+              Todo other = (Todo) obj;
+              if (id != other.id) {
+                  return false;
+              }
+              return true;
+          }
+
+          @Override
+          public String toString() {
+              return String.format(
+                      "Todo [id=%s, user=%s, desc=%s, targetDate=%s, isDone=%s]", id,
+                      user, desc, targetDate, isDone);
+          }
+
+      }
+      ```
+    </details> 
+2. Create a new file named `TodoService.java` in `com.ps.springboot.web.springbootfirstwebapplication.service` and copy and paste the following code there.
+    <details>
+    <summary> TodoService code snippet</summary>
+
+    ```java
+    package com.ps.springboot.web.springbootfirstwebapplication.service;
+
+    import java.util.ArrayList;
+    import java.util.Date;
+    import java.util.Iterator;
+    import java.util.List;
+
+    import org.springframework.stereotype.Service;
+
+    import com.ps.springboot.web.springbootfirstwebapplication.model.Todo;
+
+
+    @Service
+    public class TodoService {
+        private static List<Todo> todos = new ArrayList<Todo>();
+        private static int todoCount = 3;
+
+        static {
+            todos.add(new Todo(1, "yourname", "Learn HTML/CSS/JS", new Date(),
+                    false));
+            todos.add(new Todo(2, "yourname", "Learn React", new Date(), false));
+            todos.add(new Todo(3, "yourname", "Learn Java/SpringBoot", new Date(),
+                    false));
+        }
+
+        public List<Todo> retrieveTodos(String user) {
+            List<Todo> filteredTodos = new ArrayList<Todo>();
+            for (Todo todo : todos) {
+                if (todo.getUser().equals(user)) {
+                    filteredTodos.add(todo);
+                }
+            }
+            return filteredTodos;
+        }
+
+        public void addTodo(String name, String desc, Date targetDate,
+                boolean isDone) {
+            todos.add(new Todo(++todoCount, name, desc, targetDate, isDone));
+        }
+
+        public void deleteTodo(int id) {
+            Iterator<Todo> iterator = todos.iterator();
+            while (iterator.hasNext()) {
+                Todo todo = iterator.next();
+                if (todo.getId() == id) {
+                    iterator.remove();
+                }
+            }
+        }
+    }
+    ```
+    </details> 
+3. Let's update our `welcome.jsp` file with the following code
+    <details>
+    <summary> Body code snippet </summary>
+
+    ```html
+    <h2> Welcome ${name}! </h2>
+    <h3> <a href="/list-todos"> Click here</a> to manage your todo's </h3>
+
+    ```
+    </details>
+4. In `Project Explorer` for our project. Copy `LoginController.java` file and paste in in it's parents folder `com.ps.springboot.web.springbootfirstwebapplication.controller`. Change it's name to `TodoController`
+    - Update  `LoginService service;` to `TodoService service;` and import and remove the `LoginService`service import.
+    - Remove the `POST` method 
+    -Update method name to `showTodos`
+    - Update `@RequestMapping` value to `"/list-todos"` and `return "list-todos"`
+      <details>
+      <summary> Todo Controller code snippet </summary>
+
+      ```java
+      package com.ps.springboot.web.springbootfirstwebapplication.controller;
+
+      import org.springframework.beans.factory.annotation.Autowired;
+      import org.springframework.stereotype.Controller;
+      import org.springframework.ui.ModelMap; 
+      import org.springframework.web.bind.annotation.RequestMapping;
+      import org.springframework.web.bind.annotation.RequestMethod;
+
+
+      import com.ps.springboot.web.springbootfirstwebapplication.service.TodoService;
+
+      @Controller
+      public class TodoController {
+        @Autowired
+        TodoService service;
+        
+        @RequestMapping(value="/list-todos", method=RequestMethod.GET) 
+        public String showTodos(ModelMap model) {
+      //		model.put("name", name);
+          return "list-todos";
+          }
+        
+
+      }
+
+      ```
+      </details> 
+5. Let's copy `welcome.jsp` and create `list-todos.jsp` page. Add this to the body `<h3> Here are your list of your todos:</h3>
+`
+6. In `TodoController` file we want to show the list of todo's. Let's add the information through the `model`. For now, we will grab our user's list first. 
+    <details>
+    <summary> Need a clue </summary>
+    ```java
+
+    @RequestMapping(value="/list-todos", method=RequestMethod.GET) 
+    public String showTodos(ModelMap model) {
+    model.put("todos", service.retrieveTodos("yourname"));
+    return "list-todos";
+    }
+    ```
+
+    </details>
+
+7. To display our todo list onto the website. We must first update our `list-todos.jsp` body page. 
+
+    <details>
+    <summary> Need a clue </summary>
+
+    ```java
+    ${todos}
+    ```
+    </details>
+
+
+
+
 <!-- 
 <details>
 <summary> </summary>
 </details> -->
+
+ <!-- <image src="assets/create-login-service-class.png"> -->
