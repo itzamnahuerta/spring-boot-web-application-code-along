@@ -1033,7 +1033,9 @@ Note: Refresh your page to `/login` and sign back in to see the changes
     </dependency>
     ```
     </details>
-    - Terminate and restart your application 
+
+      - Terminate and restart your application 
+
 2. Add `logging.level.org.springframework.web=INFO` into your `application.properties` file
 3. Now add the following links into our `list-todos.jsp` file! 
     <details>
@@ -1054,7 +1056,65 @@ Note: Refresh your page to `/login` and sign back in to see the changes
     - Wrap a div with a class `container` around your table and a tag. 
     - Add a class `table table-striped` attribute in our `table` tag
     - Add a class `button` attribute in our `Add a Todo` button. Also wrap it inside of a div. 
-  
+    <details>
+    <summary> List Todos Page code snippet</summary>
+
+    ```html
+      <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+
+    <html>
+      <head>
+      <title>Todo's for ${name}</title>
+      <link href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+              rel="stylesheet">
+      </head>
+      
+      <body>
+
+      <div class="container">
+        <table class="table table-striped"> 
+            <caption>Your todos are </caption>
+            <thead>
+              <tr> 
+                <th> Description </th>
+                <th> Target Date  </th>
+                <th> Is it Done? </th>
+              </tr>
+            </thead>
+            
+            <tbody> 
+              <c:forEach items="${todos}" var="todo">
+              <tr> 
+              <td>${todo.desc}</td>
+              <td>${todo.targetDate}</td>
+              <td>${todo.done}</td>
+              </tr>
+              </c:forEach>
+            </tbody>
+          </table>
+          
+          <div> <a class="button" href="/add-todo">Add a Todo </a> </div>
+      </div>
+      
+      <script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+      <script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+      </body>
+    </html>
+
+    ```
+    </details>
+
+    
+### Step 11: Delete a Todo
+
+1. Add `<td><a type="button" class="btn btn-warning" href="/delete-todo?id=${todo.id}"> Delete </a> </td>` beneath `<td>${todo.done}</td>` tag
+2. All we need to do now is create a control method to be able to execute that specific todo item. Open `TodoController` file. And add a method to handle the delete request. 
+    - Copy and paste `showAddTodoPage` method below it. 
+    - Update `@RequestMapping` value to `/delete-todo`
+    - Update method name to `deleteTodo`
+    - Remove `Model` param and add `@RequestParam int id`
+    - Add `service.deleteTodo(id)` to the body of the method
+    - `return "redirect:/list-todos"`
 
 
 
