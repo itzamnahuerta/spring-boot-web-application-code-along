@@ -950,6 +950,7 @@ Note: Refresh your page to `/login` and sign back in to see the changes
     </details>
 
 
+### Step 9: Display Todos in a table using JSTL Tags
 
 <!-- 
 <details>
