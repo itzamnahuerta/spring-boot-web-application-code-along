@@ -829,7 +829,125 @@ We want to be able to add, delete, modify, to-do's through this application.
     ${todos}
     ```
     </details>
+8. Let's also get access to our name param. Add and import `@SessionAttributes("name")` below `@Controller` in our `LoginController` file
+9. Add `${name}` to our `<h2></h2>` tag inside of our `list-todos.jsp` file
+    <details>
+    <summary><b>List Todos</b> code snippet </summary>
 
+    ```html
+    <html>
+    <head>
+     <title>First Web Application</title>
+    </head>
+
+    <body>
+      <h2> Here are the list of ${name} todos:</h2>
+      ${todos}
+    </html>
+    ```
+
+    </details> 
+
+Note: Refresh your page to `/login` and sign back in to see the changes 
+
+### Step 8: Add a new to do
+
+1. In `list-todos.jsp` file, add an `<a>` tag with an href attribute of `/add-todo` and content with `Add a Todo`. We still need to add a controller to our href link. 
+
+2. Copy and paste `showTodos` method inside of our `TodoController`. Update name of method to `addTodo`. Our `@RequestMapping` value will be updated to `add-todos`. Remove `model.put..`. Have it `return "add-todo"`
+
+3. Let's create a `add-todo.jsp` file. Add the following code: 
+    <details>
+    <summary> <b>Add todo</b> page code snippet</summary>
+
+    ```html
+    <html>
+    <head>
+      <title>First Web Application</title>
+    </head>
+    <body>
+     <h2> Add Todo Page for ${name } </h2>
+
+    </html>
+    ```
+    </details>
+    - Let's create a form with a post method inside our page, make an `Description` input tag and submit input button
+    <details>
+    <summary><b>Form</b> code snippet </summary>
+
+    ```html
+    <form method="post">
+      Description: <input name="desc" type="text"/>
+      <input type="submit"/>
+    </form>
+    ```
+    </details>
+
+4. We want to use the same page for add a todo and update a todo as well. So let's update our `add-todo.jsp` file name to `todo.jsp`. 
+    - We will need to update our `TodoController` method `addTodo` view name to `return "todo"`.
+5. Copy and paste `addTodo` method below it. 
+    - Update the method to `POST`
+    - Update `addTodo` original method name to `showAddTodoPage`
+    - Leave the duplicated method as `addTodo`
+    - Add and import `@RequestParam String descr` to our method
+    - Insert the following `service.addTodo((String) model.get("name"), desc, new Date(), false);` onto the body of our method. Note that you will need to import Date, make sure it's java.utils and not java.sql
+    - It will `return "redirect:/list-todos";`
+6. We will need to add the following code inside our `showTodos` method within our `TodoController`
+    <details>
+    <summary> ShowTodos Code snippet</summary>
+
+    ```java
+      String name = (String) model.get("name");
+      model.put("todos", service.retrieveTodos(name));
+
+    ```
+    </details>
+7. Make sure you also have `@SessionAttributes("name")` imported below `@Controller`
+    <details>
+    <summary> <b>TodoController</b> code snippet file</summary>
+
+    ```java
+    package com.ps.springboot.web.springbootfirstwebapplication.controller;
+
+    import java.util.Date;
+
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Controller;
+    import org.springframework.ui.ModelMap; 
+    import org.springframework.web.bind.annotation.RequestMapping;
+    import org.springframework.web.bind.annotation.RequestMethod;
+    import org.springframework.web.bind.annotation.RequestParam;
+    import org.springframework.web.bind.annotation.SessionAttributes;
+
+    import com.ps.springboot.web.springbootfirstwebapplication.service.TodoService;
+
+    @Controller
+    @SessionAttributes("name")
+    public class TodoController {
+      @Autowired
+      TodoService service;
+      
+      @RequestMapping(value="/list-todos", method=RequestMethod.GET) 
+      public String showTodos(ModelMap model ) {
+        String name = (String) model.get("name");
+        model.put("todos", service.retrieveTodos(name));
+        return "list-todos";
+        }
+      
+      @RequestMapping(value="/add-todo", method=RequestMethod.GET) 
+      public String showAddTodoPage(ModelMap model) {
+        return "todo";
+        }
+      
+      @RequestMapping(value="/add-todo", method=RequestMethod.POST) 
+      public String addTodo(ModelMap model, @RequestParam String desc) { 
+        
+        service.addTodo((String) model.get("name"), desc, new Date(), false);
+        return "redirect:/list-todos";
+        }
+    }
+    ```
+    </details>
 
 
 
