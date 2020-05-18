@@ -1,5 +1,4 @@
 # Spring Boot Web Application
----
 
 ## Overview 
 
@@ -493,10 +492,102 @@ One of the important things with Spring MVC is that we have a front controller c
     - In `welcome.jsp`, add `${name}` to the heading tag
 
 
+### Step 6: Add hard-coded validation of userId and password
+
+1. Add another request param `@RequestParam String password`in `showWelcomePage` method. 
+    - Inside of our `showWelcomePage` method, add `method.put("password", password)`
+      <details>
+      <summary> updated <b>showWelcomePage</b> code snippet </summary>
+
+      ```java
+      @RequestMapping(value="/login", method=RequestMethod.POST) 
+      public String showWelcomePage(ModelMap model, @RequestParam String name, @RequestParam String password) {
+        model.put("name",name);
+        model.put("password",password);
+        return "welcome";
+        }
+      ```
+      </details>
+    - Let's make sure our password is coming through. Go to `welcome.jsp` page and add `${password}` in our `body` tag. 
+    <details>
+    <summary> Next steps  </summary>
+
+    Now let's add a bit of validation to our password
+
+    If a user is entering a wrong `user id` and `password`, we will want to send them back to the `log in` page saying <i>Incorrect user ID or password. Type the correct user ID and password, and try again</i>
+
+    We'll create a log in service which would be able to validate the things for us. 
+    </details>
+2. Create a class and add this line of code `loginService service;` inside of our `LoginController` class before our methods. `command⌘ 1`, click `Create class loginService`. 
+
+    - Before `loginService service`, add import `@Autowired`
+
+    <details>
+    <summary> <b>LoginController</b> code snippet </summary>
+
+    ```java
+    import org.springframework.beans.factory.annotation.Autowired;
+    import org.springframework.stereotype.Controller;
+
+    import com.ps.springboot.web.springbootfirstwebapplication.service.loginService;
+
+    @Controller
+    public class LoginController {
+      @Autowired
+      loginService service;
+
+      <!-- rest of code -->
+    }
+    ```
+    </details>
+
+    <details>
+    <summary> Screenshot loginService class </summary>
+
+    <image src="assets/create-login-service-class.png">
+    </details>
+    
+
+3. Create a boolean method inside of `loginService` class file. It will pass `String userid, String password`
+    - Our method will need some logic. So let our `userid` be your name, and add a `password`. 
+    - Add `@Component` above our class
+    <details>
+    <summary> <b>loginService</b> code snippet </summary>
 
 
+    ```java
+    package com.ps.springboot.web.springbootfirstwebapplication.service;
 
+    public class loginService {
 
+      public boolean validateUser(String userid, String password) {
+        return userid.equalsIgnoreCase("yourname") && password.equalsIgnoreCase("test");
+      }
+    }
+    ```
+    </details>
+4. In our `showWelcomePage` method inside our `LoginController` class. Add `service.validateUser(name, password);` in a boolean variable called `isValidUser`
+    - In the following line, add an `if statement` whether `isValidUser` is not valid, send them back to the login page. 
+    <details>
+    <summary> <b>isValidUser</b> code snippet </summary>
+
+    ```java
+      boolean isValidUser =  service.validateUser(name, password);
+
+	  if(!isValidUser) {
+
+        return "login";
+      }
+         
+    ```
+    </details>
+    <br>
+    <b> Now check out your website. Log in with the right credentials. You should now see your welcome page display. But now let's go back and refresh the url. Insert another userid and password and notice that the page refreshes back to itself.  </b>
+5. In our conditional `if statement` inside of `showWelcomePage` method. Add `model.put("errorMessage", "Invalid Credentials");`
+6. Go to  `login.jsp`, above the form tag, add `<font color="red">${errorMessage}</font>`
+7. Remove `<h3> My password is ${password }</h3>` from `welcome.jsp` file
+
+<b>You can now try the valid and invalid scenario of logging in!</b>
 
 
 <!-- 
