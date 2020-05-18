@@ -979,7 +979,8 @@ Note: Refresh your page to `/login` and sign back in to see the changes
         <body>
           <h1> Your Todos </h1>
           
-        <a href="/add-todo">Add a Todo </a>
+          <a href="/add-todo">Add a Todo </a>
+        </body>
       </html>
 
       ```
@@ -1012,6 +1013,49 @@ Note: Refresh your page to `/login` and sign back in to see the changes
     ```
     </details>
     
+### Step 10: Bootstrap
+1. Add the boostrap and jqeuery dependecies to `pom.xml` file. It can be right below our JSL dependency. 
+    <details>
+    <summary><b>pom.xml</b> dependencies</summary>
+
+    ```java
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>bootstrap</artifactId>
+      <version>3.3.6</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.webjars</groupId>
+      <artifactId>jquery</artifactId>
+      <version>1.9.1</version>
+    </dependency>
+    ```
+    </details>
+    - Terminate and restart your application 
+2. Add `logging.level.org.springframework.web=INFO` into your `application.properties` file
+3. Now add the following links into our `list-todos.jsp` file! 
+    <details>
+    <summary>Script tags </summary>
+
+    ```html
+      <!-- add the link tag inside of your head tag -->
+      <link href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+	    		rel="stylesheet">
+
+      <!-- this will be above your closing body tag -->
+    	<script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+	    <script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+
+    ```
+    </details>
+
+    - Wrap a div with a class `container` around your table and a tag. 
+    - Add a class `table table-striped` attribute in our `table` tag
+    - Add a class `button` attribute in our `Add a Todo` button. Also wrap it inside of a div. 
+  
+
 
 
 
