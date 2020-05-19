@@ -1223,7 +1223,45 @@ There is a concept called Form Backing Object. We can map values directly from t
     </details>
 
 
+### Step 14: Using JSR 349 Validations
 
+<details>
+<summary> Recap and next steps </summary>
+
+In the previous step, we created a Command Bean. The main advantage of the Command Bean or the Form Backing Bean is that now we have a double binding. 
+
+We have a bean  -mapping-> to a form. 
+We have a form  -mapping-> to a bean. 
+
+When we add a todo item, what will happen in the background is that this `model.addAttribute(...)` default gets added into the model. It gets bound to the `modelAttribute="todo"` in `todo.jsp`. So whichever value we put into our TodoController method will then be accessed in our `todo.jsp` form. 
+
+From form to bean. The value inside of the input description would go and get bound to the `Todo todo` bean object that we have in `TodoController > showAddTodoPage` 
+
+
+Next steps: 
+
+Let's add a validation where the description string must be more than 6 characters long. 
+
+</details>
+
+1. First step of adding any validation is to use something called a bean validation API around the description field. In `Todo.java` bean file. 
+    - Above `private String desc`, add and import `@Size(min=10, message="Enter atleast 10 characters")`
+    - Now let's enable the validation to our controller. In `TodoController.java` for `addTodo` add and import `@Valid` to `Todo todo`. Add and import another parameter `BindingResult result`.
+    - Add the following logic to the body of our `addTodo`
+
+
+    <details>
+    <summary>Todo Controller code snipper </summary>
+
+    ```java
+
+    if(result.hasErrors()) {
+      return "todo";
+    }
+
+    ```
+    </details> 
+2. The error message for less than 10 characters isn't displaying. In `todo.jsp`. Add `<form:errors path="desc" cssClass="text-warning"/>` above our closing `</fieldset>` tag.
 
 
 
