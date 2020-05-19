@@ -1264,6 +1264,133 @@ Let's add a validation where the description string must be more than 6 characte
 2. The error message for less than 10 characters isn't displaying. In `todo.jsp`. Add `<form:errors path="desc" cssClass="text-warning"/>` above our closing `</fieldset>` tag.
 
 
+### Step 15: Updating a todo
+
+<details>
+<summary> Recap and next steps </summary>
+
+Right now we have the functionality adding a new todo item and delete an existing todo item. 
+
+- We will want to add update button in our list of todo's 
+- Create a control method to handle the update 
+
+Basically we would want to adda button to the list todo's view and then handle the GET and POST request.
+</details>
+
+1. In `list-todos.jsp`, copy and paste `<td><a type="button" class="btn btn-success" href="/update-todo?id=${todo.id}"> Update </a> </td>` above the delete button. 
+2. Add an empty `<th></th>` below `<th> Is it Done? </th>`
+3. In `TodoController`, copy and paste `deleteTodo` method right underneath it. 
+    - Update `@RequestMapping` value to `"/update-todo"`
+    - Update method name to `updateTodo`
+    - Replace `service.deleteTodo(id);` with `service.retrieveTodo(id);`
+4. In `TodoService.java`, below `retrieveTodos`, add the following code
+    <details>
+    <summary> Todo retrieveTodos code snippet </summary>
+
+    ```java
+
+    public Todo retrieveTodo(int id) {
+    for (Todo todo : todos) {
+        if (todo.getId() == id) {
+          return todo;
+        }
+    }
+      return null;
+    }
+    ```
+    </details> 
+5. In our `updateTodo` method, let's add `ModelMap model` as a parameter in order to display this value onto our view. 
+    - Add a `Todo todo` variable to our `service..`
+    - Add `model.put("todo",todo);` right below that
+    - Update return to `"todo"`
+      <details>
+      <summary> updateTodo code snippet </summary>
+
+        ```java
+        @RequestMapping(value="/update-todo", method=RequestMethod.GET) 
+        public String updateTodo(@RequestParam int id , ModelMap model) {
+          Todo todo = service.retrieveTodos(id);
+          model.put("todo",todo);
+          return "todo";
+          }
+      
+        ```
+      </details> 
+
+6. Let's now create the POST method for the Updated Todo item. 
+    - Copy and paste the `updateTodo` method inside of `TodoController.java` right below it. 
+    - Update the original `updateTodo` method name to `showUpdateTodoPage`
+    - Update the copy method `@RequestMapping` method to `POST`
+    - Replace `updateTodo` method parameters with the following `@Valid Todo todo, BindingResult result`
+    - Copy and past the logic from `addTodo` method into `updateTodo` and remove anything else in the body before `return`
+7. Once the validation has passed then we would want to save the details back to the database.  `TodoService` does not have an `updateTodo` method. 
+    - Add this to line 45, above `addTodo` method 
+
+      <details>
+      <summary>updateTodo in TodoService code snippet </summary>
+      
+      ```java
+      public void updateTodo(Todo todo) {
+        todos.remove(todo); // it will search the todo with the specific id
+        todos.add(todo);
+        
+      }
+      ```
+      </details> 
+
+8. In `TodoController.java > updateTodo` method
+    - Add `service.updateTodo(todo);` below the conditional statement in the body
+    - Let's redirect the user to the list-todos
+    <details>
+    <summary>updateTodo code snippet  </summary>
+
+    ```java
+	@RequestMapping(value="/update-todo", method=RequestMethod.POST) 
+	public String updateTodo(@Valid Todo todo, BindingResult result) {
+		
+	    if(result.hasErrors()) {
+	        return "todo";
+	      }
+
+	    service.updateTodo(todo);
+		return  "redirect:/list-todos";
+    }
+	
+    ```
+    </details>
+9. Now we need to populate the `id` to the form inside of `todo.jsp` file. 
+    - Add the following `<form:hidden path="id"/>` tag inside our `form` tag
+10. Before updating our todo, one thing that is manditory in any todo list is having access to the `user`. 
+    - In `TodoController > updateTodo` method, add `ModelMap model` to the paramter
+    - Add `todo.setUser((String) model.get("name"));` to the body, could be before the conditional validation or after it. 
+
+    <details>
+    <summary> updateTodo method code snippet</summary>
+
+    ```java
+    @RequestMapping(value="/update-todo", method=RequestMethod.POST) 
+    public String updateTodo(ModelMap model, @Valid Todo todo, BindingResult result) {
+      todo.setUser((String) model.get("name"));
+      
+        if(result.hasErrors()) {
+            return "todo";
+          }
+        
+        service.updateTodo(todo);
+      return  "redirect:/list-todos";
+      }
+    ```
+    </details> 
+
+In this step, we added the functionaltiy to update a todo, delete a todo, and add a todo item.  
+
+
+
+
+
+
+
+
 
 
 
