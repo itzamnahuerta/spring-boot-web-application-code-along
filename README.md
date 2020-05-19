@@ -1141,6 +1141,93 @@ Note: Refresh your page to `/login` and sign back in to see the changes
 
     - Notice that if we were to add an empty description to our todos list. It will aggregate! Let's prevent that from happening by adding the following attribute `required="required"` to our input tag. 
 
+### Step 13: Part I Validations with Hibernate - Using Command Bean
+
+
+<details>
+<summary> Next steps </summary>
+
+You should never depend on client side validation because using javascript you can easily get around decline side validation. The best thing to do always is to have a server side validation. 
+
+We will learn how to write validations on the server side. We will use JSR 303 and JSR 349 defines specification for the Bean Validation API, and Hibernate Validator is the reference implementation. 
+
+Implementing Server Side Validation
+
+- Command Bean or Form Backing Bean
+    - We could map values directly from the form to the bean and vice versa. You would see that when we do the reverse we would map values directly from the bean to the form as well. 
+- Use validation on Controller
+    - We could then add validations on the command bean using the bean regulation API. Once you add validations on the bean you can use them in the controller. 
+- Display Errors in View
+    - If there's a validation error you can display it in the view. 
+
+What would happen if we wanted to add multiple other fields when adding a todo item. Perhaps we want to customize the target date or is it complete or not. In that kind of scenarios we would need to add more requests problems in here that could be a little difficult to maintain. 
+
+There is a concept called Form Backing Object. We can map values directly from the form to the bean (eg. `Todo.java`)
+
+</details>
+
+1. Let's start with switching to a Command Bean. Right now the description is giving us a string. We'd like to get it as part of the todo object. If we want to use a command bean. There arw two things we have to do. 1) Implement in the controller 2) Use springform tags on the view 
+    - In `TodoController`, remove `@RequestParam` from `addTodo` method and add `Todo todo`
+    - For `service.addTodo`, remove `desc` and replace it with `todo.getDesc()`
+2. In `todo.jsp`, we need to use the springform library. Add this tag ontop of your `todo.jsp` page, before the html body. 
+    <details>
+    <summary> Springform library tag </summary>
+
+    ```java
+
+  	<%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
+    ```
+    </details>
+3. Update `form` html tags with the following `<form:form method="post">` and closing `</form:form>`
+    - Add an attribute inside the form tag `modelAttribute="todo"`
+    - Update `<label>` with `<form:label>` add an attribute of `path="desc"`
+    - Update `<input>` with `<form:input>` and replace `name` attribute with `path`
+
+    <details>
+    <summary>Update all tags within form with the similar format  </summary>
+
+    ```html
+    <form:form method="post" modelAttribute="todo" >
+      <fieldset class="form-group"> 
+        <form:label path="desc"> Description </form:label>
+        <form:input path="desc" type="text" class="form-control" required="required"/>
+      </fieldset>
+    
+      <button type="submit" class="btn btn-success" > Add </button>
+    
+     </form:form>
+    ```
+    </details>
+4. In our `TodoController` model, we need to add `todo` as well. Let's add it in our `showAddTodoPage` method. 
+    <details>
+    <summary> showAddTodoPage code snippet </summary>
+
+    ```java
+
+    model.addAttribute("todo", new Todo(0,  (String) model.get("name"), "", new Date(), false));
+    // return
+    ```
+
+    What we are doing is creating a default object. So this is the default todo that we get when we create the command bean. The value which is in here `todo` will get mapped to the command name in `todo.jsp` form. 
+    </details>
+5. Add the following code inside of `Todo.java` file, above `public Todo(){ ... }`
+    <details>
+    <summary> todo code snippet </summary>
+
+    ```java
+    public Todo() {
+    	super();
+    }
+    ```
+    </details>
+
+
+
+
+
+
+
 
 
 <!-- 
