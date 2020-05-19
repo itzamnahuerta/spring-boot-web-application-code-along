@@ -1385,14 +1385,81 @@ Basically we would want to adda button to the list todo's view and then handle t
 In this step, we added the functionaltiy to update a todo, delete a todo, and add a todo item.  
 
 
+### Step 16: Let's add a Target Date for Todo - Use initBinder to Handle Date Fields
 
+We'd like to update a <b>Taget Date</b> when we <b>Update</b> or <b>Add a Todo</b>. 
 
+1. Let's begin by adding the `targetDate` field in `Todo.java` to `todo.jsp` page. 
+    - Replicate the `<fieldset>`, this include what is in the body of the tag below it
+    - Replace path from `desc` to `targetDate`
+    - Replace `label` tag from `Description` to `Target Date`
 
+2. We are going to set a date format across the application using `initBinder`
+    - Initalize `@InitBinder` inside our `TodoController` class, below `TodoService service`
+    - Create a void method called `initBinder` with a parameter `WebDataBinder binder`, add the following code`:
+      <details>
+      <summary> initBinder method code snippet </summary>
 
+      ```java
+  	  // import SimpleDateFormat and CustomDateEditor
+      SimpleDateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy");
+		  binder.registerCustomEditor(Date.class, new CustomDateEditor(
+				dateFormat, false));
+      ```
+      </details>
 
+      Now we can update our target date
+3. Let's update the way our target date is displayed in our `list-todos.jsp file`
+    - In JSTL, there is a library called format `/fmt`. Copy and paste the taglib and update the uri to `/fmt` instead of `/core` and prefix set to `fmt`. 
+      <details>
+      <summary>fml library tag </summary>
 
+      ```java
 
+      <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
 
+      ```
+      </details>
+
+      - Update our `<td>` tag for `${todo.targetDate}` with `<fmt:formatDate value="${todo.targetDate} pattern="dd/MM/yyyy"/>`
+4. Go to `TodoController.java > addTodo` method  and remove `new Date()` from  `service.addTodo` with `todo.getTargetDate()`
+5. Let's add a date picker for target date! We will use bootstrap for this. 
+    - Add the date picker dependency into our `pom.xml` file. Add it below our bootstrap dependency 
+      <details>
+      <summary> Boostrap datepicker dependency </summary>
+
+      ```java
+
+      <dependency>
+        <groupId>org.webjars</groupId>
+        <artifactId>bootstrap-datepicker</artifactId>
+        <version>1.0.1</version>
+      </dependency>
+      ```
+      </details>
+      
+      - Let's now add the bootstrap src date picker link to our `todo.jsp`. 
+        <details>
+        <summary>Boostrap Datepicker link </summary>
+
+        ```html
+
+	    	<script src="webjars/bootstrap-datepicker/1.0.1/js/bootstrap-datepicker.js"></script>
+        ```
+        </details>
+
+      - We need to initialize the date of which field we would want to add the date picker to. Add this line of code below our script tag
+      <details>
+      <summary> </summary>
+      ```html
+
+      <script>
+        $('#targetDate').datepicker({
+        format : 'dd/mm/yyyy'
+        });
+      </script>
+      ```
+      </details>
 
 
 <!-- 
