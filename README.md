@@ -1450,7 +1450,7 @@ We'd like to update a <b>Taget Date</b> when we <b>Update</b> or <b>Add a Todo</
 
       - We need to initialize the date of which field we would want to add the date picker to. Add this line of code below our script tag
       <details>
-      <summary> </summary>
+      <summary> Bootstrap Datepicker JS code snippet </summary>
       ```html
 
       <script>
@@ -1462,7 +1462,223 @@ We'd like to update a <b>Taget Date</b> when we <b>Update</b> or <b>Add a Todo</
       </details>
 
 
+### Step 17: JSP Fragmenets & Navigation Bar
+
+1. In `../WEB-INF/jsp`, create a new folder called `common`
+2. In `common` folder, create three files named `header.jspf`, `footer.jspf`, and `navigation.jspf`
+3. Copy the following code to our `navigation.jspf` file
+    <details>
+    <summary> Nav bar code snippet</summary>
+
+    ```html
+
+    <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
+
+    <html>
+      <head>
+        <title>First Web Application</title>
+        <link href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+                rel="stylesheet">
+      </head>
+      <body>
+      
+        <nav role="navigation" class="navbar navbar-default">
+          <div class="navbar-collapse">
+            <ul class="nav navbar-nav">
+              <li class="active"><a href="/login">Home</a></li>
+              <li><a href="/list-todos">Todos</a></li>
+        
+            </ul>
+          </div>
+        </nav>
+        <script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+        <script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+        <script src="webjars/bootstrap-datepicker/1.0.1/js/bootstrap-datepicker.js"></script>
+        <script>
+          $('#targetDate').datepicker({
+            format : 'dd/mm/yyyy'
+          });
+        </script>
+      </body>
+    </html>
+    ```
+    </details>
+4. In `todo.jsp`, remove everything besides the `<div class="container>` and the content it embodies 
+    - Add the following to two lines of code ontop of the div container
+      <details>
+      <summary> Header / Naviation / Footer code snippet </summary>
+
+      ```java
+      <%@ include file="common/header.jspf"%>
+      <%@ include file="common/navigation.jspf"%>
+      
+      // add the footer link on the last line of the file 
+      <%@ include file="common/footer.jspf"%>
+
+      ```
+      </details>
+
+5. Add the following to to our .jspf's file
+    <details>
+    <summary> header.jspf </summary>
+
+    ```html
+
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/core" prefix="c"%>
+    <%@ taglib uri="http://java.sun.com/jsp/jstl/fmt" prefix="fmt"%>
+    <%@taglib uri="http://www.springframework.org/tags/form" prefix="form"%>
+
+    <html>
+
+    <head>
+    <title>First Web Application</title>
+    <link href="webjars/bootstrap/3.3.6/css/bootstrap.min.css"
+      rel="stylesheet">
+
+    </head>
+
+    <body>
+
+
+    ```
+    </details> 
+
+    <details>
+    <summary>navigation.jspf </summary>
+
+    ```html
+
+    <nav role="navigation" class="navbar navbar-default">
+      <div class="navbar-collapse">
+        <ul class="nav navbar-nav">
+          <li class="active"><a href="/login">Home</a></li>
+          <li><a href="/list-todos">Todos</a></li>
+    
+        </ul>
+      </div>
+    </nav>
+
+    ```
+    </details>
+
+    <details>
+    <summary> footer.jspf </summary>
+
+    ```html
+    <script src="webjars/jquery/1.9.1/jquery.min.js"></script>
+    <script src="webjars/bootstrap/3.3.6/js/bootstrap.min.js"></script>
+    <script
+      src="webjars/bootstrap-datepicker/1.0.1/js/bootstrap-datepicker.js"></script>
+    <script>
+      $('#targetDate').datepicker({
+        format : 'dd/mm/yyyy'
+      });
+    </script>
+
+    </body>
+    </html>
+    ```
+    </details> 
+
+6. Update and refactor `list-todos.jsp`, `welcome.jsp`, `login.jsp` make sure each content is wrapped in a div container class. 
+    <details>
+    <summary> list-todos.jsp </summary>
+
+    ```html
+      <%@ include file="common/header.jspf"%>
+      <%@ include file="common/navigation.jspf"%>
+
+      <div class="container">
+        <table class="table table-striped"> 
+            <caption>Your todos are </caption>
+            <thead>
+              <tr> 
+                <th> Description </th>
+                <th> Target Date  </th>
+                <th> Is it Done? </th>
+                <th></th>
+              </tr>
+            </thead>
+              
+            <tbody> 
+              <c:forEach items="${todos}" var="todo">
+              <tr> 
+              <td>${todo.desc}</td>
+              <td><fmt:formatDate value="${todo.targetDate}" pattern="dd/MM/yyyy"/></td>
+              <td>${todo.done}</td>
+              <td><a type="button" class="btn btn-success" href="/update-todo?id=${todo.id}"> Update </a> </td>
+              <td><a type="button" class="btn btn-warning" href="/delete-todo?id=${todo.id}"> Delete </a> </td>
+                </tr>
+              </c:forEach>
+            </tbody>
+          </table>
+            
+          <div> <a class="button" href="/add-todo">Add a Todo </a> </div>
+      </div>
+      <%@ include file="common/footer.jspf"%>
+
+    ```
+    </details>
+
+
+    <details>
+    <summary> welcome.jsp </summary>
+
+
+    ```html
+    <%@ include file="common/header.jspf"%>
+    <%@ include file="common/navigation.jspf"%>
+
+    <div class="container"> 
+      <h2> Welcome ${name}! </h2>
+      <h3> <a href="/list-todos"> Click here</a> to manage your todo's </h3>
+    </div>
+
+    <%@ include file="common/footer.jspf"%>
+    ```
+    </details>
+  
+    <details>
+    <summary> login.jsp </summary>
+
+    ```html
+    
+    <%@ include file="common/header.jspf"%>
+    <%@ include file="common/navigation.jspf"%>
+
+    <div class="container">
+    <font color="red">${errorMessage}</font>
+        
+    <form method="post">
+        Name: <input type="text" name="name" /> 
+        Password: <input type="password" name="password"/> 
+        <input type="submit" />
+    </form>
+    </div>
+
+    <%@ include file="common/footer.jspf"%>    
+
+
+    ```
+    </details>
+
+
+<b>Exercises</b>
+- Align the login and welcome pages
+- Highlight the correfct menu item
+
+
+
+
+
+
+
+
+
+
 <!-- 
+
 <details>
 <summary> </summary>
 </details> -->
